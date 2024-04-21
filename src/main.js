@@ -281,8 +281,10 @@ class ColorPalette {
       onclick,
       onmousedown,
       onmouseup,
+      onmousemove: onmouseup.bind(this),
       ontouchstart: onmousedown.bind(this),
-      ontouchend: onmouseup.bind(this)
+      ontouchend: onmouseup.bind(this),
+      ontouchmove: onmouseup.bind(this)
     });
   }
 

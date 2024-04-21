@@ -15,6 +15,12 @@ Color Palette is a powerful Acode Editor plugin that helps developers manage the
 ## Updates ✨
 
 <details>
+  <summary>1.0.1</summary>
+  <ul>
+    <li>Fix bugs</li>
+  </ul>
+</details>
+<details>
   <summary>1.0.0</summary>
   <ul>
     <li>First Release</li>
