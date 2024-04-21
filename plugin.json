@@ -1,0 +1,16 @@
+{
+  "id": "acode.plugin.color_palette",
+  "name": "Color Palette",
+  "main": "dist/main.js",
+  "version": "1.0.0",
+  "readme": "readme.md",
+  "icon": "icon.png",
+  "files": [],
+  "minVersionCode": 289,
+  "price": 0,
+  "author": {
+    "name": "Angelo Yana",
+    "email": "angeloyana.dev@gmail.com",
+    "github": "angeloyana"
+  }
+}

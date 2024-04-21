@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Grayscale",
+    "colors": ["#FFFFFF", "#F5F5F5", "#DCDCDC", "#A9A9A9", "#808080", "#000000"]
+  },
+  {
+    "name": "Red",
+    "colors": ["#FFEBEE", "#FFCDD2", "#EF9A9A", "#E57373", "#EF5350", "#F44336"]
+  },
+  {
+    "name": "Orange",
+    "colors": ["#FFF3E0", "#FFE0B2", "#FFCC80", "#FFB74D", "#FFA726", "#FF9800"]
+  },
+  {
+    "name": "Yellow",
+    "colors": ["#FFF9C4", "#FFF59D", "#FFF176", "#FFEE58", "#FFEB3B", "#FFEB3B"]
+  },
+  {
+    "name": "Green",
+    "colors": ["#E8F5E9", "#C8E6C9", "#A5D6A7", "#81C784", "#66BB6A", "#4CAF50"]
+  },
+  {
+    "name": "Blue",
+    "colors": ["#E3F2FD", "#BBDEFB", "#90CAF9", "#64B5F6", "#42A5F5", "#2196F3"]
+  },
+  {
+    "name": "Purple",
+    "colors": ["#F3E5F5", "#E1BEE7", "#CE93D8", "#BA68C8", "#AB47BC", "#9C27B0"]
+  }
+]

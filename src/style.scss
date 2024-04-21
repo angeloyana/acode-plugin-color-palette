@@ -1,0 +1,84 @@
+$border-radius: 2px;
+$search-clr: #00000030;
+$white: #ffffff;
+
+#color-palette > .main {
+  .header {
+    padding: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .header__input {
+    all: unset;
+    width: 100%;
+    padding: 0.8rem;
+    background: $search-clr;
+    border-radius: $border-radius;
+  }
+
+  .header__btn {
+    all: unset;
+    width: 3rem;
+    padding: 0.8rem;
+    border-radius: $border-radius;
+    cursor: pointer;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .header__search-btn {
+    background: $search-clr;
+
+    &:active {
+      background: $search-clr !important;
+    }
+  }
+
+  .header__add-btn {
+    background: var(--button-background-color);
+    color: $white;
+
+    &:active {
+      background: var(--button-background-color) !important;
+    }
+  }
+
+  .palettes__no-result {
+    padding-block: 2rem;
+    text-align: center;
+  }
+
+  .palette {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .palette__header {
+    padding-block: 1rem;
+    margin-inline: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .palette__list {
+    padding: 1rem;
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .palette__list-item {
+    height: 37px;
+    border: 1px solid var(--border-color);
+    border-radius: $border-radius;
+    cursor: pointer;
+  }
+
+  .palette__options-btn {
+    font-size: 1.1rem;
+
+    &:active {
+      background: transparent !important;
+    }
+  }
+}
