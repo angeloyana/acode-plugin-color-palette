@@ -3,6 +3,7 @@ import plugin from '../plugin.json';
 import style from './style.scss';
 import defaultPalettes from './defaultPalettes.json';
 
+const { clipboard } = cordova.plugins;
 const appSettings = acode.require('settings');
 const { editor } = editorManager;
 const fs = acode.require('fs');
@@ -20,7 +21,7 @@ class ColorPalette {
   palettes = defaultPalettes;
 
   settings = {
-    preferredColorScheme: 'hex'
+    preferredColorFormat: 'hex'
   };
 
   async init($page) {
@@ -236,7 +237,7 @@ class ColorPalette {
   createColor(color, paletteIndex, colorIndex) {
     const onclick = () => {
       const encodedColor = new Color(color)[
-        this.settings.preferredColorScheme
+        this.settings.preferredColorFormat
       ].toString();
       editor.session.insert(editor.getCursorPosition(), encodedColor);
       this.hide();
@@ -253,11 +254,20 @@ class ColorPalette {
       timer = setTimeout(async () => {
         navigator.vibrate(30);
         const selected = await select(new Color(color).hex.toString(), [
-          [0, 'Change'],
-          [1, 'Remove']
+          [0, 'Copy'],
+          [1, 'Change'],
+          [2, 'Remove']
         ]);
 
         if (selected === 0) {
+          const encodedColor = new Color(color)[
+            this.settings.preferredColorFormat
+          ].toString();
+          clipboard.copy(encodedColor);
+          toast(strings['copied to clipboard']);
+        }
+
+        if (selected === 1) {
           const newColor = await colorPicker(color);
           this.palettes[paletteIndex].colors[colorIndex] = newColor;
           e.target.style.backgroundColor = newColor;
@@ -265,7 +275,7 @@ class ColorPalette {
           await this.save();
         }
 
-        if (selected === 1) {
+        if (selected === 2) {
           this.palettes[paletteIndex].colors.splice(colorIndex, 1);
           e.target.remove();
           await this.save();
@@ -315,9 +325,9 @@ class ColorPalette {
 
     const list = [
       {
-        key: 'preferredColorScheme',
-        text: 'Preferred color scheme',
-        value: this.settings.preferredColorScheme,
+        key: 'preferredColorFormat',
+        text: 'Preferred color format',
+        value: this.settings.preferredColorFormat,
         select: ['hex', 'rgb', 'hsl']
       }
     ];
@@ -352,6 +362,7 @@ class ColorPalette {
     editor.commands.removeCommand('Color Palette');
     this.$style.remove();
     delete appSettings.value[plugin.id];
+    appSettings.update(undefined, false);
   }
 }
 
