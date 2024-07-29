@@ -35,8 +35,6 @@ Color Palette is a powerful Acode Editor plugin that helps developers manage the
 </details>
 <br />
 
-> Coming soon: Load color palettes from file.
+## Source Code </>
 
-## Feedback 💬
-
-Found any bug or needed an improvement? You can contact me here [Telegram](https://t.me/+639937233976)
+[Github Repository](https://github.com/angeloyana/acode-plugin-color-palette)
