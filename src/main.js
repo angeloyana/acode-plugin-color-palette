@@ -248,44 +248,35 @@ class ColorPalette {
       this.hide();
     };
 
-    let timer;
+    const oncontextmenu = async (e) => {
+      navigator.vibrate(30);
+      const selected = await select(new Color(color).hex.toString(), [
+        [0, 'Copy'],
+        [1, 'Change'],
+        [2, 'Remove']
+      ]);
 
-    const onmouseup = () => {
-      if (timer) clearTimeout(timer);
-    };
+      if (selected === 0) {
+        const encodedColor = new Color(color)[
+          this.settings.preferredColorFormat
+        ].toString();
+        clipboard.copy(encodedColor);
+        toast(strings['copied to clipboard']);
+      }
 
-    const onmousedown = (e) => {
-      onmouseup();
-      timer = setTimeout(async () => {
-        navigator.vibrate(30);
-        const selected = await select(new Color(color).hex.toString(), [
-          [0, 'Copy'],
-          [1, 'Change'],
-          [2, 'Remove']
-        ]);
+      if (selected === 1) {
+        const newColor = await colorPicker(color);
+        this.palettes[paletteKey].colors[colorKey] = newColor;
+        e.target.style.backgroundColor = newColor;
+        color = newColor;
+        await this.save();
+      }
 
-        if (selected === 0) {
-          const encodedColor = new Color(color)[
-            this.settings.preferredColorFormat
-          ].toString();
-          clipboard.copy(encodedColor);
-          toast(strings['copied to clipboard']);
-        }
-
-        if (selected === 1) {
-          const newColor = await colorPicker(color);
-          this.palettes[paletteKey].colors[colorKey] = newColor;
-          e.target.style.backgroundColor = newColor;
-          color = newColor;
-          await this.save();
-        }
-
-        if (selected === 2) {
-          delete this.palettes[paletteKey].colors[colorKey];
-          e.target.remove();
-          await this.save();
-        }
-      }, 300);
+      if (selected === 2) {
+        delete this.palettes[paletteKey].colors[colorKey];
+        e.target.remove();
+        await this.save();
+      }
     };
 
     return tag('div', {
@@ -294,12 +285,7 @@ class ColorPalette {
         backgroundColor: color
       },
       onclick,
-      onmousedown,
-      onmouseup,
-      onmousemove: onmouseup.bind(this),
-      ontouchstart: onmousedown.bind(this),
-      ontouchend: onmouseup.bind(this),
-      ontouchmove: onmouseup.bind(this)
+      oncontextmenu
     });
   }
 
