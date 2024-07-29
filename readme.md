@@ -15,6 +15,14 @@ Color Palette is a powerful Acode Editor plugin that helps developers manage the
 ## Updates ✨
 
 <details>
+  <summary>1.0.3</summary>
+  <ul>
+    <li>Fix palettes and colors not updating correctly.</li>
+    <li>Changed default color palettes to tailwindcss colors.</li>
+    <li>Changed trigger for showing color options.</li>
+  </ul>
+</details>
+<details>
   <summary>1.0.2</summary>
   <ul>
     <li>Added <code>Copy</code> option for color</li>
