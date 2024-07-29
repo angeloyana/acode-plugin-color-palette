@@ -2,6 +2,7 @@ import Ref from 'html-tag-js/Ref';
 import plugin from '../plugin.json';
 import style from './style.scss';
 import defaultPalettes from './defaultPalettes.json';
+import { maxKey } from './utils';
 
 const { clipboard } = cordova.plugins;
 const appSettings = acode.require('settings');
@@ -16,7 +17,7 @@ const confirm = acode.require('confirm');
 
 class ColorPalette {
   /**
-   * @type {Array<{ name: string, colors: string[] }>}
+   * @type {Object<string, { name: string, colors: object<string, string> }>}
    */
   palettes = defaultPalettes;
 
@@ -73,14 +74,14 @@ class ColorPalette {
         return;
       }
 
-      const filteredPalettes = [];
-      this.palettes.forEach((palette) => {
+      const filteredPalettes = {};
+      Object.entries(this.palettes).forEach(([paletteKey, palette]) => {
         if (palette.name.toLowerCase().includes(searchValue)) {
-          filteredPalettes.push(palette);
+          filteredPalettes[paletteKey] = palette;
         }
       });
 
-      if (!filteredPalettes.length) {
+      if (!Object.keys(filteredPalettes).length) {
         this.$palettes.innerHTML = '';
         this.$palettes.append(
           <div className="palettes__no-result">
@@ -95,13 +96,14 @@ class ColorPalette {
     addBtn.el.onclick = async () => {
       const paletteName = await prompt('Create Palette', '', 'text', {
         required: true,
-        placeholder: 'Palette name',
-        test: (value) =>
-          !this.palettes.find((palette) => palette.name === value)
+        placeholder: 'Palette name'
       });
 
       if (paletteName) {
-        this.palettes.unshift({ name: paletteName, colors: [] });
+        this.palettes[String(maxKey(this.palettes) + 1)] = {
+          name: paletteName,
+          colors: {}
+        };
         await this.save();
         this.renderPalettes();
       }
@@ -121,24 +123,28 @@ class ColorPalette {
   }
 
   /**
-   * @param {Array<{ name: string, colors: string[] }>} palettes
+   * @param {Object<string, { name: string, colors: object<string, string> }>} palettes
    */
   renderPalettes(palettes) {
     if (!palettes) palettes = this.palettes;
     this.$palettes.innerHTML = '';
-    palettes.forEach(({ name, colors }, index) => {
-      const $palette = this.createPalette(name, colors, index);
+    Object.entries(palettes).forEach(([paletteKey, palette]) => {
+      const $palette = this.createPalette(
+        palette.name,
+        palette.colors,
+        paletteKey
+      );
       this.$palettes.append($palette);
     });
   }
 
   /**
    * @param {string} name
-   * @param {Array<string>} colors
-   * @param {number} paletteIndex
+   * @param {Object<string, string>} colors
+   * @param {string} paletteKey
    * @returns {HTMLElement}
    */
-  createPalette(name, colors, paletteIndex) {
+  createPalette(name, colors, paletteKey) {
     const $palette = tag('div', {
       className: 'palette'
     });
@@ -150,8 +156,8 @@ class ColorPalette {
 
     const $colors = tag('div', {
       className: 'palette__list',
-      children: colors.map((color, colorIndex) => {
-        return this.createColor(color, paletteIndex, colorIndex);
+      children: Object.entries(colors).map(([colorKey, color]) => {
+        return this.createColor(color, paletteKey, colorKey);
       })
     });
 
@@ -170,26 +176,25 @@ class ColorPalette {
           switch (selected) {
             case 0:
               const newColor = await colorPicker();
+              const newColorKey = String(maxKey(this.palettes[paletteKey].colors) + 1);
               const $color = this.createColor(
                 newColor,
-                paletteIndex,
-                this.palettes[paletteIndex].colors.length
+                paletteKey,
+                newColorKey
               );
 
-              this.palettes[paletteIndex].colors.push(newColor);
+              this.palettes[paletteKey].colors[newColorKey] = newColor;
               $colors.append($color);
               await this.save();
               break;
             case 1:
               const newName = await prompt('Rename Palette', name, 'text', {
                 required: true,
-                test: (value) =>
-                  !this.palettes.find((palette) => palette.name === value),
                 placeholder: name
               });
 
               if (newName) {
-                this.palettes[paletteIndex].name = newName;
+                this.palettes[paletteKey].name = newName;
                 $header.innerText = newName;
                 name = newName;
                 await this.save();
@@ -201,7 +206,7 @@ class ColorPalette {
                 'Are you sure you want to reset the palette?'
               );
               if (choice) {
-                this.palettes[paletteIndex].colors = [];
+                this.palettes[paletteKey].colors = {};
                 $colors
                   .getAll('.palette__list-item:not(.palette__options-btn)')
                   .forEach(($c) => $c.remove());
@@ -214,7 +219,7 @@ class ColorPalette {
                 'Are you sure you want to delete the palette?'
               );
               if (choice) {
-                this.palettes.splice(paletteIndex, 1);
+                delete this.palettes[paletteKey];
                 $palette.remove();
                 await this.save();
               }
@@ -230,11 +235,11 @@ class ColorPalette {
 
   /**
    * @param {string} color
-   * @param {number} colorIndex
-   * @param {number} paletteIndex
+   * @param {string} paletteKey
+   * @param {string} colorKey
    * @returns {HTMLElement}
    */
-  createColor(color, paletteIndex, colorIndex) {
+  createColor(color, paletteKey, colorKey) {
     const onclick = () => {
       const encodedColor = new Color(color)[
         this.settings.preferredColorFormat
@@ -269,14 +274,14 @@ class ColorPalette {
 
         if (selected === 1) {
           const newColor = await colorPicker(color);
-          this.palettes[paletteIndex].colors[colorIndex] = newColor;
+          this.palettes[paletteKey].colors[colorKey] = newColor;
           e.target.style.backgroundColor = newColor;
           color = newColor;
           await this.save();
         }
 
         if (selected === 2) {
-          this.palettes[paletteIndex].colors.splice(colorIndex, 1);
+          delete this.palettes[paletteKey].colors[colorKey];
           e.target.remove();
           await this.save();
         }
